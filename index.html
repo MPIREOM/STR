@@ -31,18 +31,26 @@
   <div id="app-container" class="h-full w-full relative overflow-auto">
 
     <!-- Header / Controls -->
-    <div class="control-panel absolute top-4 left-4 right-4 md:right-auto md:w-[30rem] bg-white/92 backdrop-blur-md rounded-2xl p-5 border border-gray-200 shadow-xl">
-      <div class="flex items-start justify-between gap-3">
+    <div id="dashboard" class="control-panel fixed bottom-4 left-4 right-4 md:absolute md:top-4 md:bottom-auto md:right-auto md:left-4 md:w-[30rem] bg-white/92 backdrop-blur-md rounded-2xl border border-gray-200 shadow-xl transition-all duration-200">
+      <div id="dashboard-header" class="px-4 pt-4 md:px-5 md:pt-5 flex items-start justify-between gap-3">
         <div>
           <h1 class="text-2xl font-bold text-gray-900 mb-1">Muscat STR Market Size</h1>
           <p class="text-gray-600 text-sm">Supply + Revenue Pool • Segmented by ADR Pricing Tier</p>
         </div>
-        <div class="text-[11px] text-gray-500 text-right leading-tight">
-          <div class="font-semibold text-gray-700">Source</div>
-          <div>AirROI Atlas export</div>
-        </div>
+        <div class="flex items-start gap-3">
+  <div class="text-[11px] text-gray-500 text-right leading-tight">
+    <div class="font-semibold text-gray-700">Source</div>
+    <div>AirROI Atlas export</div>
+  </div>
+  <button id="dash-toggle" type="button" onclick="toggleDashboard()" class="mt-0.5 inline-flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 shadow-sm" aria-label="Minimize dashboard">
+    <svg id="dash-toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+      <path d="M6 9l6 6 6-6"></path>
+    </svg>
+  </button>
+</div>
       </div>
 
+      <div id="dashboard-body" class="px-4 pb-4 md:px-5 md:pb-5 mt-4 overflow-y-auto max-h-[60vh] md:max-h-none">
       <!-- KPI strip -->
       <div class="grid grid-cols-3 gap-3 mt-4">
         <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
@@ -152,6 +160,7 @@
 
       <div class="mt-3 text-[11px] text-gray-500">
         Tip: “Luxury” + “Top 20%” is a strong premium-market slide.
+      </div>
       </div>
     </div>
 
@@ -469,6 +478,49 @@
       document.getElementById('view-filter').addEventListener('change', applyFilters);
     }
 
+    // =========================
+    // DASHBOARD MINIMIZE (mobile-friendly)
+    // =========================
+    function setDashboardCollapsed(collapsed) {
+      const dash = document.getElementById('dashboard');
+      const body = document.getElementById('dashboard-body');
+      const icon = document.getElementById('dash-toggle-icon');
+
+      if (!dash || !body) return;
+
+      if (collapsed) {
+        dash.classList.add('ring-1','ring-black/5');
+        dash.style.maxHeight = '72px';
+        body.classList.add('hidden');
+        if (icon) icon.style.transform = 'rotate(180deg)';
+        dash.setAttribute('data-collapsed', 'true');
+      } else {
+        dash.style.maxHeight = '';
+        body.classList.remove('hidden');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+        dash.setAttribute('data-collapsed', 'false');
+      }
+    }
+
+    function toggleDashboard() {
+      const dash = document.getElementById('dashboard');
+      const isCollapsed = dash?.getAttribute('data-collapsed') === 'true';
+      setDashboardCollapsed(!isCollapsed);
+    }
+
+    // Default: collapse on small screens so the map is visible
+    function initDashboardBehavior() {
+      const isSmall = window.matchMedia('(max-width: 767px)').matches;
+      setDashboardCollapsed(isSmall);
+      window.addEventListener('resize', () => {
+        // if user resized to desktop, expand for readability
+        const nowSmall = window.matchMedia('(max-width: 767px)').matches;
+        if (!nowSmall) setDashboardCollapsed(false);
+      });
+    }
+
+
+    initDashboardBehavior();
     initMap();
   </script>
 </body>

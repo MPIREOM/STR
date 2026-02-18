@@ -1,0 +1,329 @@
+{
+  "kpi_2025": {
+    "total_market_revenue_omr": 1152662,
+    "yoy_revenue_growth": "+60.9%",
+    "active_listings_jan_2026": 449,
+    "avg_occupancy_2025": 0.383,
+    "avg_adr_2025_omr": 35.67,
+    "avg_revpar_2025_omr": 13.71,
+    "avg_booking_rate_2025": 0.602
+  },
+  "monthly_tracker": [
+    {
+      "month": "Mar 2023",
+      "revenue_omr": 76805.0,
+      "listings": 286.0,
+      "occupancy": 0.421,
+      "adr_omr": 36.89,
+      "revpar_omr": 14.04
+    },
+    {
+      "month": "Apr 2023",
+      "revenue_omr": 63454.0,
+      "listings": 288.0,
+      "occupancy": 0.374,
+      "adr_omr": 44.05,
+      "revpar_omr": 12.85
+    },
+    {
+      "month": "May 2023",
+      "revenue_omr": 55083.0,
+      "listings": 282.0,
+      "occupancy": 0.404,
+      "adr_omr": 31.7,
+      "revpar_omr": 12.58
+    },
+    {
+      "month": "Jun 2023",
+      "revenue_omr": 47967.0,
+      "listings": 281.0,
+      "occupancy": 0.368,
+      "adr_omr": 32.51,
+      "revpar_omr": 12.03
+    },
+    {
+      "month": "Jul 2023",
+      "revenue_omr": 82898.0,
+      "listings": 286.0,
+      "occupancy": 0.41,
+      "adr_omr": 36.21,
+      "revpar_omr": 21.91
+    },
+    {
+      "month": "Aug 2023",
+      "revenue_omr": 82448.0,
+      "listings": 288.0,
+      "occupancy": 0.375,
+      "adr_omr": 35.59,
+      "revpar_omr": 21.74
+    },
+    {
+      "month": "Sep 2023",
+      "revenue_omr": 84633.0,
+      "listings": 293.0,
+      "occupancy": 0.309,
+      "adr_omr": 40.99,
+      "revpar_omr": 18.7
+    },
+    {
+      "month": "Oct 2023",
+      "revenue_omr": 50222.0,
+      "listings": 265.0,
+      "occupancy": 0.363,
+      "adr_omr": 35.1,
+      "revpar_omr": 12.35
+    },
+    {
+      "month": "Nov 2023",
+      "revenue_omr": 47506.0,
+      "listings": 256.0,
+      "occupancy": 0.393,
+      "adr_omr": 33.69,
+      "revpar_omr": 14.35
+    },
+    {
+      "month": "Dec 2023",
+      "revenue_omr": 51960.0,
+      "listings": 239.0,
+      "occupancy": 0.363,
+      "adr_omr": 36.41,
+      "revpar_omr": 13.8
+    },
+    {
+      "month": "Jan 2024",
+      "revenue_omr": 53088.0,
+      "listings": 232.0,
+      "occupancy": 0.378,
+      "adr_omr": 35.86,
+      "revpar_omr": 13.18
+    },
+    {
+      "month": "Feb 2024",
+      "revenue_omr": 47324.0,
+      "listings": 216.0,
+      "occupancy": 0.418,
+      "adr_omr": 34.81,
+      "revpar_omr": 14.98
+    },
+    {
+      "month": "Mar 2024",
+      "revenue_omr": 36837.0,
+      "listings": 204.0,
+      "occupancy": 0.37,
+      "adr_omr": 36.8,
+      "revpar_omr": 13.35
+    },
+    {
+      "month": "Apr 2024",
+      "revenue_omr": 30052.0,
+      "listings": 160.0,
+      "occupancy": 0.361,
+      "adr_omr": 29.41,
+      "revpar_omr": 12.33
+    },
+    {
+      "month": "May 2024",
+      "revenue_omr": 21073.0,
+      "listings": 159.0,
+      "occupancy": 0.328,
+      "adr_omr": 29.61,
+      "revpar_omr": 9.16
+    },
+    {
+      "month": "Jun 2024",
+      "revenue_omr": 20318.0,
+      "listings": 158.0,
+      "occupancy": 0.307,
+      "adr_omr": 41.06,
+      "revpar_omr": 10.06
+    },
+    {
+      "month": "Jul 2024",
+      "revenue_omr": 53017.0,
+      "listings": 235.0,
+      "occupancy": 0.358,
+      "adr_omr": 38.06,
+      "revpar_omr": 12.79
+    },
+    {
+      "month": "Aug 2024",
+      "revenue_omr": 56320.0,
+      "listings": 247.0,
+      "occupancy": 0.364,
+      "adr_omr": 38.68,
+      "revpar_omr": 13.46
+    },
+    {
+      "month": "Sep 2024",
+      "revenue_omr": 55703.0,
+      "listings": 254.0,
+      "occupancy": 0.362,
+      "adr_omr": 35.64,
+      "revpar_omr": 13.0
+    },
+    {
+      "month": "Oct 2024",
+      "revenue_omr": 79901.0,
+      "listings": 259.0,
+      "occupancy": 0.431,
+      "adr_omr": 37.48,
+      "revpar_omr": 15.7
+    },
+    {
+      "month": "Nov 2024",
+      "revenue_omr": 102672.0,
+      "listings": 304.0,
+      "occupancy": 0.393,
+      "adr_omr": 36.0,
+      "revpar_omr": 16.31
+    },
+    {
+      "month": "Dec 2024",
+      "revenue_omr": 160142.0,
+      "listings": 347.0,
+      "occupancy": 0.469,
+      "adr_omr": 38.6,
+      "revpar_omr": 19.32
+    },
+    {
+      "month": "Jan 2025",
+      "revenue_omr": 139023.0,
+      "listings": 377.0,
+      "occupancy": 0.448,
+      "adr_omr": 37.07,
+      "revpar_omr": 16.25
+    },
+    {
+      "month": "Feb 2025",
+      "revenue_omr": 146228.0,
+      "listings": 385.0,
+      "occupancy": 0.52,
+      "adr_omr": 35.13,
+      "revpar_omr": 19.91
+    },
+    {
+      "month": "Mar 2025",
+      "revenue_omr": 103273.0,
+      "listings": 383.0,
+      "occupancy": 0.38,
+      "adr_omr": 35.88,
+      "revpar_omr": 13.82
+    },
+    {
+      "month": "Apr 2025",
+      "revenue_omr": 100232.0,
+      "listings": 386.0,
+      "occupancy": 0.391,
+      "adr_omr": 35.2,
+      "revpar_omr": 13.91
+    },
+    {
+      "month": "May 2025",
+      "revenue_omr": 67867.0,
+      "listings": 394.0,
+      "occupancy": 0.307,
+      "adr_omr": 34.13,
+      "revpar_omr": 10.66
+    },
+    {
+      "month": "Jun 2025",
+      "revenue_omr": 62544.0,
+      "listings": 402.0,
+      "occupancy": 0.312,
+      "adr_omr": 35.03,
+      "revpar_omr": 10.54
+    },
+    {
+      "month": "Jul 2025",
+      "revenue_omr": 68322.0,
+      "listings": 399.0,
+      "occupancy": 0.33,
+      "adr_omr": 35.27,
+      "revpar_omr": 11.57
+    },
+    {
+      "month": "Aug 2025",
+      "revenue_omr": 58713.0,
+      "listings": 394.0,
+      "occupancy": 0.32,
+      "adr_omr": 35.14,
+      "revpar_omr": 10.38
+    },
+    {
+      "month": "Sep 2025",
+      "revenue_omr": 61796.0,
+      "listings": 363.0,
+      "occupancy": 0.326,
+      "adr_omr": 36.34,
+      "revpar_omr": 11.43
+    },
+    {
+      "month": "Oct 2025",
+      "revenue_omr": 88652.0,
+      "listings": 364.0,
+      "occupancy": 0.379,
+      "adr_omr": 36.77,
+      "revpar_omr": 13.79
+    },
+    {
+      "month": "Nov 2025",
+      "revenue_omr": 94371.0,
+      "listings": 363.0,
+      "occupancy": 0.405,
+      "adr_omr": 36.46,
+      "revpar_omr": 14.77
+    },
+    {
+      "month": "Dec 2025",
+      "revenue_omr": 161641.0,
+      "listings": 437.0,
+      "occupancy": 0.474,
+      "adr_omr": 35.61,
+      "revpar_omr": 17.47
+    },
+    {
+      "month": "Jan 2026",
+      "revenue_omr": 143123.0,
+      "listings": 449.0,
+      "occupancy": 0.441,
+      "adr_omr": 35.4,
+      "revpar_omr": 15.39
+    }
+  ],
+  "quarterly_revenue": [
+    {
+      "quarter": "Q1",
+      "rev_2023": 76805.0,
+      "rev_2024": 137249.0,
+      "rev_2025": 388524.0
+    },
+    {
+      "quarter": "Q2",
+      "rev_2023": 166504.0,
+      "rev_2024": 71443.0,
+      "rev_2025": 230643.0
+    },
+    {
+      "quarter": "Q3",
+      "rev_2023": 249979.0,
+      "rev_2024": 165040.0,
+      "rev_2025": 188831.0
+    },
+    {
+      "quarter": "Q4",
+      "rev_2023": 149688.0,
+      "rev_2024": 342715.0,
+      "rev_2025": 344664.0
+    },
+    {
+      "quarter": "Full Year",
+      "rev_2023": 642976.0,
+      "rev_2024": 716447.0,
+      "rev_2025": 1152662.0
+    }
+  ],
+  "meta": {
+    "source": "AirROI Market Data Platform",
+    "sheet": "Executive Dashboard"
+  }
+}

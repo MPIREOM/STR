@@ -17,6 +17,58 @@
     #map { z-index: 1; }
     .control-panel { z-index: 1000; }
 
+    /* Mobile toggle button */
+    #panel-toggle {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      z-index: 1100;
+      background: #111827;
+      color: #fff;
+      border: none;
+      border-radius: 2rem;
+      padding: 0.65rem 1.1rem;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      cursor: pointer;
+      align-items: center;
+      gap: 0.4rem;
+      display: none;
+    }
+    #panel-toggle svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    @media (max-width: 767px) {
+      #panel-toggle { display: flex !important; }
+
+      .control-panel {
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        border-radius: 1.25rem 1.25rem 0 0 !important;
+        max-height: 72vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        transform: translateY(0);
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      }
+
+      .control-panel.panel-collapsed {
+        transform: translateY(100%) !important;
+        pointer-events: none;
+      }
+
+      #property-panel {
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        border-radius: 1.25rem 1.25rem 0 0 !important;
+        max-height: 50vh;
+        overflow-y: auto;
+      }
+    }
+
     .custom-popup .leaflet-popup-content-wrapper{
       background: rgba(17,24,39,0.96);
       color:#fff;
@@ -471,8 +523,28 @@
       document.getElementById('view-filter').addEventListener('change', applyFilters);
     }
 
+  
+  // Mobile panel toggle
+  function toggleMobilePanel() {
+    const panel = document.querySelector('.control-panel:not(#property-panel)');
+    const btn = document.getElementById('panel-toggle');
+    const isCollapsed = panel.classList.toggle('panel-collapsed');
+    btn.innerHTML = isCollapsed
+      ? '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg> Stats'
+      : '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg> Close';
+  }
+
     initMap();
   </script>
+
+  <!-- Mobile panel toggle button -->
+  <button id="panel-toggle" onclick="toggleMobilePanel()" aria-label="Toggle stats panel">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+    </svg>
+    Stats
+  </button>
 </body>
 </html>
+ 
  

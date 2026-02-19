@@ -562,8 +562,7 @@ const occ_pct = Number((r[13] || "").trim()) * (100 / 30);  // days/month → pe
               </div>
             </div>
           </div>
-        `, { className: 'custom-popup' })
-        .on('click', () => showPropertyPanel(item));
+        `, { className: 'custom-popup' });
 
       // hover effect
       marker.on('mouseover', function(){

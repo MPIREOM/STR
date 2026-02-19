@@ -423,26 +423,26 @@
         if (!r || r.length < 12) continue;
 
         const airbnbListingId = (r[0] || "").trim();
-        const listingName = (r[2] || "").trim();
-        const listingType = (r[3] || "").trim();
-        const lat = Number((r[4] || "").trim());
-        const lng = Number((r[5] || "").trim());
+const listingName = (r[0] || "").trim());
+const listingType = (r[1] || "").trim());
+const lat = Number((r[2] || "").trim());
+const lng = Number((r[3] || "").trim());
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
 
-        const googleMapsLinkRaw = (r[6] || "").trim();
-        const maybeAirbnbUrl = (r[7] || "").trim();
-
+const googleMapsLinkRaw = (r[4] || "").trim();
+const maybeAirbnbUrl = (r[5] || "").trim();
+        
         const airbnbUrl = (maybeAirbnbUrl.includes("airbnb.com/rooms"))
           ? maybeAirbnbUrl
           : (airbnbListingId ? `https://www.airbnb.com/rooms/${airbnbListingId}` : "");
 
-        const city = (r[8] || "").trim() || "—";
-
+const city = (r[6] || "").trim() || "—";
+        
         // Core metrics (based on observed export layout)
-        const revenue_omr = Number((r[15] || "").trim());       // monthly revenue OMR
-        const adr = Number((r[16] || "").trim());               // avgDailyRate
-        const occ_pct = Number((r[17] || "").trim());           // occupancyRate_pct
-
+const revenue_omr = Number((r[11] || "").trim()) / 12;  // annual ÷ 12 = monthly revenue OMR
+const adr = Number((r[12] || "").trim());            // avgDailyRate
+const occ_pct = Number((r[13] || "").trim()) * (100 / 30);  // days/month → percentage
+        
         const mapsUrl = (googleMapsLinkRaw && googleMapsLinkRaw.startsWith("http"))
           ? googleMapsLinkRaw
           : `https://www.google.com/maps?q=${lat},${lng}`;

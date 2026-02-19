@@ -425,8 +425,8 @@
         const airbnbListingId = (r[0] || "").trim();
 const listingName = (r[0] || "").trim();
 const listingType = (r[1] || "").trim();
-const lat = Number((r[2] || "").trim();
-const lng = Number((r[3] || "").trim();
+const lat = Number((r[2] || "").trim());
+const lng = Number((r[3] || "").trim());
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
 
 const googleMapsLinkRaw = (r[4] || "").trim();
@@ -440,7 +440,7 @@ const city = (r[6] || "").trim() || "—";
         
         // Core metrics (based on observed export layout)
 const revenue_omr = Number((r[11] || "").trim()) / 12;  // annual ÷ 12 = monthly revenue OMR
-const adr = Number((r[12] || "").trim();            // avgDailyRate
+const adr = Number((r[12] || "").trim());            // avgDailyRate
 const occ_pct = Number((r[13] || "").trim()) * (100 / 30);  // days/month → percentage
         
         const mapsUrl = (googleMapsLinkRaw && googleMapsLinkRaw.startsWith("http"))

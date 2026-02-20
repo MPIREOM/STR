@@ -6,7 +6,14 @@
     "avg_occupancy_2025": 0.383,
     "avg_adr_2025_omr": 35.67,
     "avg_revpar_2025_omr": 13.71,
-    "avg_booking_rate_2025": 0.602
+    "avg_booking_rate_2025": 0.602,
+    "supply_growth_mar_2023_to_jan_2026": 0.57,
+    "total_active_listings_dataset": 493,
+    "revenue_2024_omr": 716447,
+    "avg_occupancy_2024": 0.378,
+    "avg_adr_2024_omr": 36.0,
+    "avg_revpar_2024_omr": 13.64,
+    "avg_booking_rate_2024": 0.589
   },
   "monthly_tracker": [
     {
@@ -324,6 +331,70 @@
   ],
   "meta": {
     "source": "AirROI Market Data Platform",
-    "sheet": "Executive Dashboard"
+    "sheet": "Executive Dashboard",
+    "data_period": "March 2023 - January 2026",
+    "currency": "OMR",
+    "region": "Muscat, Oman"
+  },
+  "annual_comparison": [
+    {
+      "period": "2023 (Mar-Dec)",
+      "total_revenue_omr": 642976,
+      "yoy_growth": null,
+      "total_nights": 18494,
+      "avg_listings": 277,
+      "avg_occupancy": 0.378,
+      "avg_adr_omr": 35.91,
+      "avg_revpar_omr": 15.03,
+      "avg_booking_rate": 0.522,
+      "rev_per_night_omr": 34.76
+    },
+    {
+      "period": "2024 (Full Year)",
+      "total_revenue_omr": 716447,
+      "yoy_growth": 0.114,
+      "total_nights": 20773,
+      "avg_listings": 232,
+      "avg_occupancy": 0.378,
+      "avg_adr_omr": 36.0,
+      "avg_revpar_omr": 13.64,
+      "avg_booking_rate": 0.589,
+      "rev_per_night_omr": 34.49
+    },
+    {
+      "period": "2025 (Full Year)",
+      "total_revenue_omr": 1152662,
+      "yoy_growth": 0.609,
+      "total_nights": 33938,
+      "avg_listings": 386,
+      "avg_occupancy": 0.383,
+      "avg_adr_omr": 35.67,
+      "avg_revpar_omr": 13.71,
+      "avg_booking_rate": 0.602,
+      "rev_per_night_omr": 33.97
+    },
+    {
+      "period": "2026 (Jan Only)",
+      "total_revenue_omr": 143123,
+      "yoy_growth": null,
+      "total_nights": 4168,
+      "avg_listings": 449,
+      "avg_occupancy": 0.441,
+      "avg_adr_omr": 35.4,
+      "avg_revpar_omr": 15.39,
+      "avg_booking_rate": 0.684,
+      "rev_per_night_omr": 34.34
+    }
+  ],
+  "market_health": {
+    "peak_to_trough_revenue_ratio": 7.9,
+    "seasonality_risk": "high",
+    "market_maturity_stage": "growth_phase",
+    "supply_demand_balance": "supply_growth_outpacing_demand",
+    "property_mix": {
+      "entire_home": 0.75,
+      "private_room": 0.2,
+      "hotel_or_shared": 0.05
+    }
   }
 }

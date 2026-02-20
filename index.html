@@ -488,7 +488,7 @@
           ? maybeAirbnbUrl
           : (airbnbListingId ? `https://www.airbnb.com/rooms/${airbnbListingId}` : "");
 
-        const city = (r[idxCity] || "").trim() || "—";
+        const city = (r[idxCity] || "").trim() || "Muscat";
 
         const annualRevenue = Number((r[idxAnnualRevenue] || "").trim());
         const revenue_omr = annualRevenue / 12;

@@ -418,6 +418,22 @@
       return out;
     }
 
+    function normalizeHeaderName(value){
+      return (value || "")
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+    }
+
+    function getColumnIndex(headerMap, candidates){
+      for (const candidate of candidates){
+        const idx = headerMap[normalizeHeaderName(candidate)];
+        if (Number.isInteger(idx)) return idx;
+      }
+      return -1;
+    }
+
     async function loadListingsCSV(){
       const res = await fetch(LISTINGS_CSV_URL);
       const text = await res.text();
@@ -428,36 +444,56 @@
       if (dataLines.length < 2) return [];
 
       // header row is the first non-comment line
-      // NOTE: export header is slightly off (airbnb URL lives where "city" header is),
-      // so we map by index rather than by name.
+      const header = parseCSVLine(dataLines[0]);
+      const headerMap = {};
+      header.forEach((name, idx) => {
+        headerMap[normalizeHeaderName(name)] = idx;
+      });
+
+      const idxListingId = getColumnIndex(headerMap, ["Listing ID"]);
+      const idxName = getColumnIndex(headerMap, ["Name", "listingName"]);
+      const idxLatitude = getColumnIndex(headerMap, ["Latitude", "latitude"]);
+      const idxLongitude = getColumnIndex(headerMap, ["Longitude", "longitude"]);
+      const idxGoogleMapsUrl = getColumnIndex(headerMap, ["Google Maps URL", "googleMapsLink"]);
+      const idxAirbnbUrl = getColumnIndex(headerMap, ["Airbnb URL", "AirBnBLink"]);
+      const idxPropertyType = getColumnIndex(headerMap, ["Property Type", "listingType"]);
+      const idxRoomType = getColumnIndex(headerMap, ["Room Type"]);
+      const idxAnnualRevenue = getColumnIndex(headerMap, ["Annual Revenue LTM (USD)", "RevenuePerYear"]);
+      const idxAdr = getColumnIndex(headerMap, ["Avg Daily Rate LTM (USD)", "ADR"]);
+      const idxOccupancy = getColumnIndex(headerMap, ["Avg Occupancy Rate LTM (%)", "occupancyRate"]);
+
       const rows = dataLines.slice(1).map(parseCSVLine);
 
       const parsed = [];
       for (const r of rows){
-        // expect at least 18 columns
-        if (!r || r.length < 12) continue;
+        if (!r || !r.length) continue;
 
-        const listingName = (r[0] || "").trim();
-const listingType = (r[1] || "").trim();
-const lat = Number((r[2] || "").trim());
-const lng = Number((r[3] || "").trim());
+        const listingName = (r[idxName] || "").trim();
+        const propertyType = (r[idxPropertyType] || "").trim();
+        const roomType = (r[idxRoomType] || "").trim();
+        const listingType = [propertyType, roomType].filter(Boolean).join(" • ") || propertyType || "—";
+
+        const lat = Number((r[idxLatitude] || "").trim());
+        const lng = Number((r[idxLongitude] || "").trim());
         if (!Number.isFinite(lat) || !Number.isFinite(lng) || (lat === 0 && lng === 0)) continue;
 
-const googleMapsLinkRaw = (r[4] || "").trim();
-const maybeAirbnbUrl = (r[5] || "").trim();
+        const googleMapsLinkRaw = (r[idxGoogleMapsUrl] || "").trim();
+        const maybeAirbnbUrl = (r[idxAirbnbUrl] || "").trim();
         const airbnbListingIdMatch = maybeAirbnbUrl.match(/rooms\/(\d+)/);
-        const airbnbListingId = airbnbListingIdMatch ? airbnbListingIdMatch[1] : "";
+        const listingIdRaw = (r[idxListingId] || "").trim();
+        const airbnbListingId = airbnbListingIdMatch ? airbnbListingIdMatch[1] : listingIdRaw;
         
         const airbnbUrl = (maybeAirbnbUrl.includes("airbnb.com/rooms"))
           ? maybeAirbnbUrl
           : (airbnbListingId ? `https://www.airbnb.com/rooms/${airbnbListingId}` : "");
 
-const city = (r[6] || "").trim() || "—";
-        
-        // Core metrics (based on observed export layout)
-const revenue_omr = Number((r[11] || "").trim()) / 12;  // annual ÷ 12 = monthly revenue OMR
-const adr = Number((r[12] || "").trim());            // avgDailyRate
-const occ_pct = Number((r[13] || "").trim()) * (100 / 30);  // days/month → percentage
+        const city = "Muscat";
+
+        const annualRevenue = Number((r[idxAnnualRevenue] || "").trim());
+        const revenue_omr = annualRevenue / 12;
+        const adr = Number((r[idxAdr] || "").trim());
+        const rawOcc = Number((r[idxOccupancy] || "").trim());
+        const occ_pct = rawOcc <= 1 ? rawOcc * 100 : rawOcc;
         
         const mapsUrl = (googleMapsLinkRaw && googleMapsLinkRaw.startsWith("http"))
           ? googleMapsLinkRaw

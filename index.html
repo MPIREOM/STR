@@ -434,10 +434,34 @@
       return -1;
     }
 
+    function splitCSVRows(text){
+      // Split CSV text into logical rows, respecting quoted fields that may
+      // contain embedded newlines.
+      const rows = [];
+      let cur = "";
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++){
+        const ch = text[i];
+        if (ch === '"'){
+          if (inQuotes && text[i+1] === '"'){ cur += '""'; i++; }
+          else inQuotes = !inQuotes;
+          cur += ch;
+        } else if ((ch === '\n' || ch === '\r') && !inQuotes){
+          if (ch === '\r' && text[i+1] === '\n') i++; // skip \r\n
+          if (cur.trim().length) rows.push(cur);
+          cur = "";
+        } else {
+          cur += ch;
+        }
+      }
+      if (cur.trim().length) rows.push(cur);
+      return rows;
+    }
+
     async function loadListingsCSV(){
       const res = await fetch(LISTINGS_CSV_URL);
       const text = await res.text();
-      const lines = text.split(/\r?\n/).filter(l => l.trim().length);
+      const lines = splitCSVRows(text);
 
       // skip comment lines that start with '#'
       const dataLines = lines.filter(l => !l.trim().startsWith("#"));
@@ -468,7 +492,7 @@
       for (const r of rows){
         if (!r || !r.length) continue;
 
-        const listingName = (r[idxName] || "").trim();
+        const listingName = (r[idxName] || "").replace(/[\r\n]+/g, " ").trim();
         const propertyType = (r[idxPropertyType] || "").trim();
         const roomType = (r[idxRoomType] || "").trim();
         const listingType = [propertyType, roomType].filter(Boolean).join(" • ") || propertyType || "—";

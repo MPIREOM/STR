@@ -134,12 +134,12 @@
           <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
             <div class="text-[11px] text-gray-500">Revenue pool</div>
             <div class="text-2xl font-bold text-emerald-600" id="kpi-total-rev">--</div>
-            <div class="text-[11px] text-gray-500">OMR / month</div>
+            <div class="text-[11px] text-gray-500">USD / month</div>
           </div>
           <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
             <div class="text-[11px] text-gray-500">Annualized</div>
             <div class="text-2xl font-bold text-indigo-600" id="kpi-annual">--</div>
-            <div class="text-[11px] text-gray-500">OMR / year</div>
+            <div class="text-[11px] text-gray-500">USD / year</div>
           </div>
         </div>
 
@@ -147,7 +147,7 @@
           <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
             <div class="text-[11px] text-gray-500">Avg ADR</div>
             <div class="text-xl font-bold text-gray-900" id="kpi-adr">--</div>
-            <div class="text-[11px] text-gray-500">OMR</div>
+            <div class="text-[11px] text-gray-500">USD</div>
           </div>
           <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
             <div class="text-[11px] text-gray-500">Avg occupancy</div>
@@ -157,7 +157,7 @@
           <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
             <div class="text-[11px] text-gray-500">Avg rev / listing</div>
             <div class="text-xl font-bold text-gray-900" id="kpi-avg-rev">--</div>
-            <div class="text-[11px] text-gray-500">OMR / month</div>
+            <div class="text-[11px] text-gray-500">USD / month</div>
           </div>
         </div>
 
@@ -191,7 +191,7 @@
             </div>
           </div>
           <div class="mt-2 text-[11px] text-gray-500">
-            Thresholds: Low &lt; <span class="font-semibold" id="th-low">35</span> • Mid <span class="font-semibold" id="th-mid">35–55</span> • Luxury &gt; <span class="font-semibold" id="th-lux">55</span> (OMR ADR)
+            Thresholds: Low &lt; <span class="font-semibold" id="th-low">35</span> • Mid <span class="font-semibold" id="th-mid">35–55</span> • Luxury &gt; <span class="font-semibold" id="th-lux">55</span> (USD ADR)
           </div>
         </div>
 
@@ -199,7 +199,7 @@
         <div class="grid grid-cols-1 gap-3">
           <div class="filter-grid grid grid-cols-2 gap-3">
             <div>
-              <label class="text-xs text-gray-600 mb-1 block">Neighborhood (City)</label>
+              <label class="text-xs text-gray-600 mb-1 block">Location</label>
               <select id="neighborhood-filter" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-200">
                 <option value="all">All</option>
               </select>
@@ -366,7 +366,7 @@
     // =========================
     // HELPERS
     // =========================
-    const fmtOMR = (n) => Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+    const fmtMoney = (n) => Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
     function tierFromADR(adr){
@@ -418,6 +418,22 @@
       return out;
     }
 
+    function normalizeHeaderName(value){
+      return (value || "")
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+    }
+
+    function getColumnIndex(headerMap, candidates){
+      for (const candidate of candidates){
+        const idx = headerMap[normalizeHeaderName(candidate)];
+        if (Number.isInteger(idx)) return idx;
+      }
+      return -1;
+    }
+
     async function loadListingsCSV(){
       const res = await fetch(LISTINGS_CSV_URL);
       const text = await res.text();
@@ -428,36 +444,57 @@
       if (dataLines.length < 2) return [];
 
       // header row is the first non-comment line
-      // NOTE: export header is slightly off (airbnb URL lives where "city" header is),
-      // so we map by index rather than by name.
+      const header = parseCSVLine(dataLines[0]);
+      const headerMap = {};
+      header.forEach((name, idx) => {
+        headerMap[normalizeHeaderName(name)] = idx;
+      });
+
+      const idxListingId = getColumnIndex(headerMap, ["Listing ID"]);
+      const idxName = getColumnIndex(headerMap, ["Name", "listingName"]);
+      const idxLatitude = getColumnIndex(headerMap, ["Latitude", "latitude"]);
+      const idxLongitude = getColumnIndex(headerMap, ["Longitude", "longitude"]);
+      const idxGoogleMapsUrl = getColumnIndex(headerMap, ["Google Maps URL", "googleMapsLink"]);
+      const idxAirbnbUrl = getColumnIndex(headerMap, ["Airbnb URL", "AirBnBLink"]);
+      const idxPropertyType = getColumnIndex(headerMap, ["Property Type", "listingType"]);
+      const idxRoomType = getColumnIndex(headerMap, ["Room Type"]);
+      const idxCity = getColumnIndex(headerMap, ["City", "city", "Neighborhood", "Neighbourhood"]);
+      const idxAnnualRevenue = getColumnIndex(headerMap, ["Annual Revenue LTM (USD)", "RevenuePerYear"]);
+      const idxAdr = getColumnIndex(headerMap, ["Avg Daily Rate LTM (USD)", "ADR"]);
+      const idxOccupancy = getColumnIndex(headerMap, ["Avg Occupancy Rate LTM (%)", "occupancyRate"]);
+
       const rows = dataLines.slice(1).map(parseCSVLine);
 
       const parsed = [];
       for (const r of rows){
-        // expect at least 18 columns
-        if (!r || r.length < 12) continue;
+        if (!r || !r.length) continue;
 
-        const listingName = (r[0] || "").trim();
-const listingType = (r[1] || "").trim();
-const lat = Number((r[2] || "").trim());
-const lng = Number((r[3] || "").trim());
+        const listingName = (r[idxName] || "").trim();
+        const propertyType = (r[idxPropertyType] || "").trim();
+        const roomType = (r[idxRoomType] || "").trim();
+        const listingType = [propertyType, roomType].filter(Boolean).join(" • ") || propertyType || "—";
+
+        const lat = Number((r[idxLatitude] || "").trim());
+        const lng = Number((r[idxLongitude] || "").trim());
         if (!Number.isFinite(lat) || !Number.isFinite(lng) || (lat === 0 && lng === 0)) continue;
 
-const googleMapsLinkRaw = (r[4] || "").trim();
-const maybeAirbnbUrl = (r[5] || "").trim();
+        const googleMapsLinkRaw = (r[idxGoogleMapsUrl] || "").trim();
+        const maybeAirbnbUrl = (r[idxAirbnbUrl] || "").trim();
         const airbnbListingIdMatch = maybeAirbnbUrl.match(/rooms\/(\d+)/);
-        const airbnbListingId = airbnbListingIdMatch ? airbnbListingIdMatch[1] : "";
+        const listingIdRaw = (r[idxListingId] || "").trim();
+        const airbnbListingId = airbnbListingIdMatch ? airbnbListingIdMatch[1] : listingIdRaw;
         
         const airbnbUrl = (maybeAirbnbUrl.includes("airbnb.com/rooms"))
           ? maybeAirbnbUrl
           : (airbnbListingId ? `https://www.airbnb.com/rooms/${airbnbListingId}` : "");
 
-const city = (r[6] || "").trim() || "—";
-        
-        // Core metrics (based on observed export layout)
-const revenue_omr = Number((r[11] || "").trim()) / 12;  // annual ÷ 12 = monthly revenue OMR
-const adr = Number((r[12] || "").trim());            // avgDailyRate
-const occ_pct = Number((r[13] || "").trim()) * (100 / 30);  // days/month → percentage
+        const city = (r[idxCity] || "").trim() || "—";
+
+        const annualRevenue = Number((r[idxAnnualRevenue] || "").trim());
+        const revenue_omr = annualRevenue / 12;
+        const adr = Number((r[idxAdr] || "").trim());
+        const rawOcc = Number((r[idxOccupancy] || "").trim());
+        const occ_pct = rawOcc <= 1 ? rawOcc * 100 : rawOcc;
         
         const mapsUrl = (googleMapsLinkRaw && googleMapsLinkRaw.startsWith("http"))
           ? googleMapsLinkRaw
@@ -511,7 +548,7 @@ const occ_pct = Number((r[13] || "").trim()) * (100 / 30);  // days/month → pe
         const summary = await res.json();
 
         const k = summary.kpi_2025 || {};
-        document.getElementById('x-rev-2025').textContent = `${fmtOMR(k.total_market_revenue_omr)} OMR`;
+        document.getElementById('x-rev-2025').textContent = `${fmtMoney(k.total_market_revenue_omr)} OMR`;
         document.getElementById('x-yoy').textContent = k.yoy_revenue_growth || "--";
         document.getElementById('x-active').textContent = (k.active_listings_jan_2026 ?? "--").toString();
         document.getElementById('x-occ').textContent = (Number.isFinite(k.avg_occupancy_2025) ? Math.round(k.avg_occupancy_2025*100) + "%" : "--");
@@ -569,8 +606,8 @@ const occ_pct = Number((r[13] || "").trim()) * (100 / 30);  // days/month → pe
               <div>📍 ${item.city}</div>
               <div>🏠 ${item.type}</div>
               <div>🏷 Tier: <span style="color:${color};font-weight:700">${tierLabel(item.tier)}</span></div>
-              <div>💰 Monthly: <span style="color:#10b981">${fmtOMR(item.revenue)} OMR</span></div>
-              <div>📈 ADR: ${Math.round(item.adr)} OMR | Occ: ${Math.round(item.occupancy)}%</div>
+              <div>💰 Monthly: <span style="color:#10b981">${fmtMoney(item.revenue)} USD</span></div>
+              <div>📈 ADR: ${Math.round(item.adr)} USD | Occ: ${Math.round(item.occupancy)}%</div>
               <div class="pt-2 flex gap-2">
                 <a href="${item.airbnbUrl}" target="_blank" rel="noopener noreferrer"
                    style="display:inline-block;padding:6px 10px;border-radius:10px;background:#111827;color:#fff;font-weight:600;text-decoration:none;">
@@ -603,8 +640,8 @@ const occ_pct = Number((r[13] || "").trim()) * (100 / 30);  // days/month → pe
       document.getElementById('p-city').textContent = item.city;
       document.getElementById('p-type').textContent = item.type;
       document.getElementById('p-tier').textContent = tierLabel(item.tier);
-      document.getElementById('p-rev').textContent = `${fmtOMR(item.revenue)} OMR / month`;
-      document.getElementById('p-adr').textContent = `${Math.round(item.adr)} OMR`;
+      document.getElementById('p-rev').textContent = `${fmtMoney(item.revenue)} USD / month`;
+      document.getElementById('p-adr').textContent = `${Math.round(item.adr)} USD`;
       document.getElementById('p-occ').textContent = `${Math.round(item.occupancy)}%`;
 
       const airbnbA = document.getElementById('p-airbnb');
@@ -641,10 +678,10 @@ const occ_pct = Number((r[13] || "").trim()) * (100 / 30);  // days/month → pe
       const avgAdr = filteredData.reduce((s, x) => s + (x.adr || 0), 0) / n;
       const avgOcc = filteredData.reduce((s, x) => s + (x.occupancy || 0), 0) / n;
 
-      document.getElementById('kpi-total-rev').textContent = fmtOMR(Math.round(totalRev));
-      document.getElementById('kpi-annual').textContent = fmtOMR(Math.round(annual));
-      document.getElementById('kpi-avg-rev').textContent = fmtOMR(Math.round(avgRev));
-      document.getElementById('kpi-adr').textContent = fmtOMR(Math.round(avgAdr));
+      document.getElementById('kpi-total-rev').textContent = fmtMoney(Math.round(totalRev));
+      document.getElementById('kpi-annual').textContent = fmtMoney(Math.round(annual));
+      document.getElementById('kpi-avg-rev').textContent = fmtMoney(Math.round(avgRev));
+      document.getElementById('kpi-adr').textContent = fmtMoney(Math.round(avgAdr));
       document.getElementById('kpi-occ').textContent = `${Math.round(avgOcc)}%`;
 
       const cLow = filteredData.filter(x => x.tier === "low").length;

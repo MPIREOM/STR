@@ -698,8 +698,10 @@
       const totalRev = filteredData.reduce((s, x) => s + (x.revenue || 0), 0);
       const annual = totalRev * 12;
       const avgRev = totalRev / n;
-      const avgAdr = filteredData.reduce((s, x) => s + (x.adr || 0), 0) / n;
-      const avgOcc = filteredData.reduce((s, x) => s + (x.occupancy || 0), 0) / n;
+      const adrItems = filteredData.filter(x => x.adr > 0);
+      const occItems = filteredData.filter(x => x.occupancy > 0);
+      const avgAdr = adrItems.length ? adrItems.reduce((s, x) => s + x.adr, 0) / adrItems.length : 0;
+      const avgOcc = occItems.length ? occItems.reduce((s, x) => s + x.occupancy, 0) / occItems.length : 0;
 
       document.getElementById('kpi-total-rev').textContent = fmtOMR(Math.round(totalRev));
       document.getElementById('kpi-annual').textContent = fmtOMR(Math.round(annual));

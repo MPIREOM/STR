@@ -344,6 +344,7 @@
     // =========================
     // SETTINGS
     // =========================
+    const USD_TO_OMR = 0.385; // Omani Rial pegged rate
     const ADR_LOW_MAX = 35;   // Low: < 35
     const ADR_MID_MAX = 55;   // Mid: 35–55, Luxury: > 55
 
@@ -513,9 +514,9 @@
 
         const city = "Muscat";
 
-        const annualRevenue = Number((r[idxAnnualRevenue] || "").trim());
-        const revenue_omr = annualRevenue / 12;
-        const adr = Number((r[idxAdr] || "").trim());
+        const annualRevenueUsd = Number((r[idxAnnualRevenue] || "").trim());
+        const revenue_omr = (annualRevenueUsd * USD_TO_OMR) / 12;
+        const adr = Number((r[idxAdr] || "").trim()) * USD_TO_OMR;
         const rawOcc = Number((r[idxOccupancy] || "").trim());
         const occ_pct = rawOcc <= 1 ? rawOcc * 100 : rawOcc;
         

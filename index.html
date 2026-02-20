@@ -269,6 +269,21 @@
             </div>
           </div>
 
+          <div class="kpi-grid grid grid-cols-3 gap-2 mt-2">
+            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+              <div class="text-[11px] text-gray-500">Avg RevPAR (2025)</div>
+              <div class="text-sm font-semibold text-gray-900" id="x-revpar">--</div>
+            </div>
+            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+              <div class="text-[11px] text-gray-500">Supply growth</div>
+              <div class="text-sm font-semibold text-gray-900" id="x-supply">--</div>
+            </div>
+            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+              <div class="text-[11px] text-gray-500">Seasonality risk</div>
+              <div class="text-sm font-semibold text-gray-900" id="x-seasonality">--</div>
+            </div>
+          </div>
+
           <div class="mt-3">
             <div class="flex items-center justify-between">
               <div class="text-[11px] text-gray-600 font-semibold">Monthly revenue trend</div>
@@ -422,8 +437,7 @@
         // expect at least 18 columns
         if (!r || r.length < 12) continue;
 
-        const airbnbListingId = (r[0] || "").trim();
-const listingName = (r[0] || "").trim();
+        const listingName = (r[0] || "").trim();
 const listingType = (r[1] || "").trim();
 const lat = Number((r[2] || "").trim());
 const lng = Number((r[3] || "").trim());
@@ -431,6 +445,8 @@ const lng = Number((r[3] || "").trim());
 
 const googleMapsLinkRaw = (r[4] || "").trim();
 const maybeAirbnbUrl = (r[5] || "").trim();
+        const airbnbListingIdMatch = maybeAirbnbUrl.match(/rooms\/(\d+)/);
+        const airbnbListingId = airbnbListingIdMatch ? airbnbListingIdMatch[1] : "";
         
         const airbnbUrl = (maybeAirbnbUrl.includes("airbnb.com/rooms"))
           ? maybeAirbnbUrl
@@ -501,6 +517,11 @@ const occ_pct = Number((r[13] || "").trim()) * (100 / 30);  // days/month → pe
         document.getElementById('x-occ').textContent = (Number.isFinite(k.avg_occupancy_2025) ? Math.round(k.avg_occupancy_2025*100) + "%" : "--");
         document.getElementById('x-adr').textContent = (Number.isFinite(k.avg_adr_2025_omr) ? `${Math.round(k.avg_adr_2025_omr)} OMR` : "--");
         document.getElementById('x-book').textContent = (Number.isFinite(k.avg_booking_rate_2025) ? Math.round(k.avg_booking_rate_2025*100) + "%" : "--");
+        document.getElementById('x-revpar').textContent = (Number.isFinite(k.avg_revpar_2025_omr) ? `${k.avg_revpar_2025_omr.toFixed(2)} OMR` : "--");
+        document.getElementById('x-supply').textContent = (Number.isFinite(k.supply_growth_mar_2023_to_jan_2026) ? Math.round(k.supply_growth_mar_2023_to_jan_2026*100) + "%" : "--");
+        document.getElementById('x-seasonality').textContent = (summary.market_health && summary.market_health.seasonality_risk)
+          ? summary.market_health.seasonality_risk.replace('_', ' ')
+          : "--";
 
         const series = (summary.monthly_tracker || []).map(x => Number(x.revenue_omr));
         const labels = (summary.monthly_tracker || []).map(x => x.month);

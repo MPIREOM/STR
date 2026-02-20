@@ -1,2 +1,0 @@
-# Keep PR merges unblocked for the single-page app file by preferring PR branch content on merge.
-index.html merge=ours

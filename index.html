@@ -108,7 +108,6 @@
           <div class="text-[11px] text-gray-500 text-right leading-tight hidden md:block">
             <div class="font-semibold text-gray-700">Sources</div>
             <div>AirROI Atlas (map)</div>
-            <div>AirROI Excel (summary)</div>
           </div>
 
           <!-- Minimize button -->
@@ -232,71 +231,6 @@
           </div>
         </div>
 
-        <!-- Excel Summary (new) -->
-        <div class="bg-white rounded-xl border border-gray-200 p-3">
-          <div class="flex items-center justify-between">
-            <div class="text-xs text-gray-700 font-semibold">AirROI Executive Summary (2025)</div>
-            <div class="text-[11px] text-gray-500">From Dashboard</div>
-          </div>
-
-          <div class="kpi-grid grid grid-cols-3 gap-2 mt-2">
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              <div class="text-[11px] text-gray-500">2025 revenue</div>
-              <div class="text-sm font-semibold text-gray-900" id="x-rev-2025">--</div>
-            </div>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              <div class="text-[11px] text-gray-500">YoY growth</div>
-              <div class="text-sm font-semibold text-gray-900" id="x-yoy">--</div>
-            </div>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              <div class="text-[11px] text-gray-500">Active listings (Jan '26)</div>
-              <div class="text-sm font-semibold text-gray-900" id="x-active">--</div>
-            </div>
-          </div>
-
-          <div class="kpi-grid grid grid-cols-3 gap-2 mt-2">
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              <div class="text-[11px] text-gray-500">Avg occ (2025)</div>
-              <div class="text-sm font-semibold text-gray-900" id="x-occ">--</div>
-            </div>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              <div class="text-[11px] text-gray-500">Avg ADR (2025)</div>
-              <div class="text-sm font-semibold text-gray-900" id="x-adr">--</div>
-            </div>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              <div class="text-[11px] text-gray-500">Booking rate (2025)</div>
-              <div class="text-sm font-semibold text-gray-900" id="x-book">--</div>
-            </div>
-          </div>
-
-          <div class="kpi-grid grid grid-cols-3 gap-2 mt-2">
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              <div class="text-[11px] text-gray-500">Avg RevPAR (2025)</div>
-              <div class="text-sm font-semibold text-gray-900" id="x-revpar">--</div>
-            </div>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              <div class="text-[11px] text-gray-500">Supply growth</div>
-              <div class="text-sm font-semibold text-gray-900" id="x-supply">--</div>
-            </div>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-              <div class="text-[11px] text-gray-500">Seasonality risk</div>
-              <div class="text-sm font-semibold text-gray-900" id="x-seasonality">--</div>
-            </div>
-          </div>
-
-          <div class="mt-3">
-            <div class="flex items-center justify-between">
-              <div class="text-[11px] text-gray-600 font-semibold">Monthly revenue trend</div>
-              <div class="text-[11px] text-gray-500" id="sparkline-range">--</div>
-            </div>
-            <div class="mt-2 bg-gray-50 border border-gray-200 rounded-lg p-2">
-              <svg id="sparkline" width="100%" height="54" viewBox="0 0 300 54" preserveAspectRatio="none">
-                <path id="sparkline-path" d="" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
         <div class="text-[11px] text-gray-500">
           Tip: On mobile, tap “Minimize” to view the map. Click any point for Airbnb + Google Maps links.
         </div>
@@ -354,7 +288,6 @@
 
     // Files (place alongside this HTML on GitHub Pages)
     const LISTINGS_CSV_URL = "./airroi_atlas_all_listings_with_airbnb_ids.csv";
-    const EXCEL_SUMMARY_JSON_URL = "./market_summary.json";
 
     // =========================
     // STATE
@@ -543,57 +476,6 @@
       }
 
       return parsed;
-    }
-
-    // =========================
-    // EXCEL SUMMARY LOAD + SPARKLINE
-    // =========================
-    function sparklinePath(values){
-      const w = 300, h = 54, pad = 4;
-      const v = values.filter(x => Number.isFinite(x));
-      if (!v.length) return "";
-
-      const min = Math.min(...v), max = Math.max(...v);
-      const range = (max - min) || 1;
-
-      const step = (w - pad*2) / (v.length - 1 || 1);
-      let d = "";
-      v.forEach((val, i) => {
-        const x = pad + i * step;
-        const y = pad + (h - pad*2) * (1 - (val - min) / range);
-        d += (i === 0 ? "M" : "L") + x.toFixed(2) + "," + y.toFixed(2);
-      });
-      return d;
-    }
-
-    async function loadExcelSummary(){
-      try{
-        const res = await fetch(EXCEL_SUMMARY_JSON_URL);
-        const summary = await res.json();
-
-        const k = summary.kpi_2025 || {};
-        document.getElementById('x-rev-2025').textContent = `${fmtOMR(k.total_market_revenue_omr)} OMR`;
-        document.getElementById('x-yoy').textContent = k.yoy_revenue_growth || "--";
-        document.getElementById('x-active').textContent = (k.active_listings_jan_2026 ?? "--").toString();
-        document.getElementById('x-occ').textContent = (Number.isFinite(k.avg_occupancy_2025) ? Math.round(k.avg_occupancy_2025*100) + "%" : "--");
-        document.getElementById('x-adr').textContent = (Number.isFinite(k.avg_adr_2025_omr) ? `${Math.round(k.avg_adr_2025_omr)} OMR` : "--");
-        document.getElementById('x-book').textContent = (Number.isFinite(k.avg_booking_rate_2025) ? Math.round(k.avg_booking_rate_2025*100) + "%" : "--");
-        document.getElementById('x-revpar').textContent = (Number.isFinite(k.avg_revpar_2025_omr) ? `${k.avg_revpar_2025_omr.toFixed(2)} OMR` : "--");
-        document.getElementById('x-supply').textContent = (Number.isFinite(k.supply_growth_mar_2023_to_jan_2026) ? Math.round(k.supply_growth_mar_2023_to_jan_2026*100) + "%" : "--");
-        document.getElementById('x-seasonality').textContent = (summary.market_health && summary.market_health.seasonality_risk)
-          ? summary.market_health.seasonality_risk.replace('_', ' ')
-          : "--";
-
-        const series = (summary.monthly_tracker || []).map(x => Number(x.revenue_omr));
-        const labels = (summary.monthly_tracker || []).map(x => x.month);
-        if (labels.length){
-          document.getElementById('sparkline-range').textContent = `${labels[0]} → ${labels[labels.length-1]}`;
-        }
-        document.getElementById('sparkline-path').setAttribute('d', sparklinePath(series));
-      } catch(e){
-        // If summary file missing, leave blank (map still works)
-        console.warn("Excel summary load failed:", e);
-      }
     }
 
     // =========================
@@ -812,9 +694,6 @@
 
       populateFilters();
       updateMarkers();
-
-      // Excel summary in parallel
-      loadExcelSummary();
 
       // filters
       document.getElementById('neighborhood-filter').addEventListener('change', applyFilters);

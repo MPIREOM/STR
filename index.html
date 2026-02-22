@@ -13,18 +13,61 @@
 
   <style>
     * { font-family: 'Space Grotesk', sans-serif; }
-    body { background:#f6f7fb; }
+    body { background:#0a0e1a; }
     #map { z-index: 1; }
     .control-panel { z-index: 1000; }
 
-    .custom-popup .leaflet-popup-content-wrapper{
-      background: rgba(17,24,39,0.96);
-      color:#fff;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+    /* Glow keyframes */
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 8px 2px var(--glow-color, rgba(99,102,241,0.4)); }
+      50% { box-shadow: 0 0 18px 6px var(--glow-color, rgba(99,102,241,0.6)); }
     }
-    .custom-popup .leaflet-popup-tip{ background: rgba(17,24,39,0.96); }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes borderGlow {
+      0%, 100% { border-color: rgba(99,102,241,0.25); }
+      50% { border-color: rgba(99,102,241,0.5); }
+    }
+
+    /* Dark glassmorphism popup */
+    .custom-popup .leaflet-popup-content-wrapper{
+      background: rgba(10,14,26,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color:#fff;
+      border-radius: 16px;
+      border: 1px solid rgba(99,102,241,0.3);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 20px rgba(99,102,241,0.15);
+      animation: fadeSlideUp 0.25s ease-out;
+    }
+    .custom-popup .leaflet-popup-tip{ background: rgba(10,14,26,0.92); }
+
+    /* Marker glow on hover */
+    .custom-marker div {
+      transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+
+    /* Leaflet attribution dark */
+    .leaflet-control-attribution {
+      background: rgba(10,14,26,0.7) !important;
+      color: rgba(255,255,255,0.4) !important;
+    }
+    .leaflet-control-attribution a { color: rgba(139,146,255,0.7) !important; }
+    .leaflet-control-zoom a {
+      background: rgba(10,14,26,0.85) !important;
+      color: #fff !important;
+      border-color: rgba(99,102,241,0.3) !important;
+    }
+    .leaflet-control-zoom a:hover {
+      background: rgba(99,102,241,0.3) !important;
+    }
+
+    /* Scrollbar dark */
+    #dashboard-body::-webkit-scrollbar { width: 4px; }
+    #dashboard-body::-webkit-scrollbar-track { background: transparent; }
+    #dashboard-body::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 4px; }
 
     /* Mobile: bottom-sheet */
     @media (max-width: 768px){
@@ -46,11 +89,8 @@
       }
       #dashboard.minimized #dashboard-body{ display:none; }
 
-      /* Stack KPI grids to 2 columns on mobile */
       .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
-      /* Stack tier legend vertically */
       .tier-grid { grid-template-columns: 1fr !important; }
-      /* Stack filters to single column */
       .filter-grid { grid-template-columns: 1fr !important; }
     }
 
@@ -92,27 +132,30 @@
   <div id="app-container" class="h-full w-full relative overflow-hidden">
 
     <!-- Dashboard -->
-    <div id="dashboard" class="control-panel absolute bg-white/92 backdrop-blur-md rounded-2xl p-5 border border-gray-200 shadow-xl">
+    <div id="dashboard" class="control-panel absolute rounded-2xl p-5 shadow-xl" style="background:rgba(10,14,26,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(99,102,241,0.25);box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 30px rgba(99,102,241,0.1);animation:fadeSlideUp 0.4s ease-out, borderGlow 4s ease-in-out infinite">
       <!-- Mobile drag handle -->
       <div class="md:hidden flex justify-center mb-2">
-        <div class="w-10 h-1 rounded-full bg-gray-300"></div>
+        <div class="w-10 h-1 rounded-full" style="background:rgba(99,102,241,0.5)"></div>
       </div>
       <!-- Header row -->
       <div class="flex items-start justify-between gap-3">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900 mb-1">Muscat STR Market Size</h1>
-          <p class="text-gray-600 text-sm">Supply + Revenue Pool • Segmented by ADR Pricing Tier</p>
+          <h1 class="text-2xl font-bold mb-1" style="color:#e0e4ff">Muscat STR Market Size</h1>
+          <p class="text-sm" style="color:rgba(165,170,210,0.7)">Supply + Revenue Pool • Segmented by ADR Pricing Tier</p>
         </div>
 
         <div class="flex flex-col items-end gap-2">
-          <div class="text-[11px] text-gray-500 text-right leading-tight hidden md:block">
-            <div class="font-semibold text-gray-700">Sources</div>
+          <div class="text-[11px] text-right leading-tight hidden md:block" style="color:rgba(165,170,210,0.5)">
+            <div class="font-semibold" style="color:rgba(165,170,210,0.7)">Sources</div>
             <div>AirROI Atlas (map)</div>
           </div>
 
           <!-- Minimize button -->
           <button id="toggle-btn"
-            class="inline-flex items-center gap-2 text-xs px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 min-h-[36px]"
+            class="inline-flex items-center gap-2 text-xs px-3 py-2 rounded-lg min-h-[36px]"
+            style="border:1px solid rgba(99,102,241,0.3);background:rgba(99,102,241,0.1);color:rgba(200,205,240,0.9);transition:all 0.2s ease"
+            onmouseover="this.style.background='rgba(99,102,241,0.25)';this.style.borderColor='rgba(99,102,241,0.5)'"
+            onmouseout="this.style.background='rgba(99,102,241,0.1)';this.style.borderColor='rgba(99,102,241,0.3)'"
             aria-label="Minimize dashboard">
             <span id="toggle-text">Minimize</span>
             <svg id="toggle-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,71 +168,71 @@
       <div id="dashboard-body" class="mt-4 space-y-4">
         <!-- KPIs from map listings -->
         <div class="kpi-grid grid grid-cols-3 gap-3">
-          <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
-            <div class="text-[11px] text-gray-500">Mapped listings</div>
-            <div class="text-2xl font-bold text-gray-900" id="kpi-listings">--</div>
-            <div class="text-[11px] text-gray-500">&nbsp;</div>
+          <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);transition:all 0.2s ease" onmouseover="this.style.borderColor='rgba(99,102,241,0.4)';this.style.boxShadow='0 0 12px rgba(99,102,241,0.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.boxShadow='none'">
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">Mapped listings</div>
+            <div class="text-2xl font-bold" style="color:#e0e4ff" id="kpi-listings">--</div>
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">&nbsp;</div>
           </div>
-          <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
-            <div class="text-[11px] text-gray-500">Revenue pool</div>
-            <div class="text-2xl font-bold text-emerald-600" id="kpi-total-rev">--</div>
-            <div class="text-[11px] text-gray-500">OMR / month</div>
+          <div class="rounded-xl p-3" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);transition:all 0.2s ease" onmouseover="this.style.borderColor='rgba(16,185,129,0.4)';this.style.boxShadow='0 0 12px rgba(16,185,129,0.15)'" onmouseout="this.style.borderColor='rgba(16,185,129,0.15)';this.style.boxShadow='none'">
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">Revenue pool</div>
+            <div class="text-2xl font-bold" style="color:#34d399" id="kpi-total-rev">--</div>
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">OMR / month</div>
           </div>
-          <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
-            <div class="text-[11px] text-gray-500">Annualized</div>
-            <div class="text-2xl font-bold text-indigo-600" id="kpi-annual">--</div>
-            <div class="text-[11px] text-gray-500">OMR / year</div>
+          <div class="rounded-xl p-3" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);transition:all 0.2s ease" onmouseover="this.style.borderColor='rgba(99,102,241,0.4)';this.style.boxShadow='0 0 12px rgba(99,102,241,0.15)'" onmouseout="this.style.borderColor='rgba(99,102,241,0.15)';this.style.boxShadow='none'">
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">Annualized</div>
+            <div class="text-2xl font-bold" style="color:#818cf8" id="kpi-annual">--</div>
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">OMR / year</div>
           </div>
         </div>
 
         <div class="kpi-grid grid grid-cols-3 gap-3">
-          <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
-            <div class="text-[11px] text-gray-500">Avg ADR</div>
-            <div class="text-xl font-bold text-gray-900" id="kpi-adr">--</div>
-            <div class="text-[11px] text-gray-500">OMR</div>
+          <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);transition:all 0.2s ease" onmouseover="this.style.borderColor='rgba(99,102,241,0.4)';this.style.boxShadow='0 0 12px rgba(99,102,241,0.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.boxShadow='none'">
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">Avg ADR</div>
+            <div class="text-xl font-bold" style="color:#e0e4ff" id="kpi-adr">--</div>
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">OMR</div>
           </div>
-          <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
-            <div class="text-[11px] text-gray-500">Avg occupancy</div>
-            <div class="text-xl font-bold text-gray-900" id="kpi-occ">--</div>
-            <div class="text-[11px] text-gray-500">&nbsp;</div>
+          <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);transition:all 0.2s ease" onmouseover="this.style.borderColor='rgba(99,102,241,0.4)';this.style.boxShadow='0 0 12px rgba(99,102,241,0.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.boxShadow='none'">
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">Avg occupancy</div>
+            <div class="text-xl font-bold" style="color:#e0e4ff" id="kpi-occ">--</div>
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">&nbsp;</div>
           </div>
-          <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
-            <div class="text-[11px] text-gray-500">Avg rev / listing</div>
-            <div class="text-xl font-bold text-gray-900" id="kpi-avg-rev">--</div>
-            <div class="text-[11px] text-gray-500">OMR / month</div>
+          <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);transition:all 0.2s ease" onmouseover="this.style.borderColor='rgba(99,102,241,0.4)';this.style.boxShadow='0 0 12px rgba(99,102,241,0.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.boxShadow='none'">
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">Avg rev / listing</div>
+            <div class="text-xl font-bold" style="color:#e0e4ff" id="kpi-avg-rev">--</div>
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">OMR / month</div>
           </div>
         </div>
 
         <!-- Tier legend + counts -->
-        <div class="bg-white rounded-xl border border-gray-200 p-3">
+        <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
           <div class="flex items-center justify-between">
-            <div class="text-xs text-gray-700 font-semibold">Pricing tiers (ADR)</div>
-            <div class="text-[11px] text-gray-500">Color = tier • Size = monthly revenue</div>
+            <div class="text-xs font-semibold" style="color:rgba(200,205,240,0.8)">Pricing tiers (ADR)</div>
+            <div class="text-[11px]" style="color:rgba(165,170,210,0.5)">Color = tier • Size = monthly revenue</div>
           </div>
           <div class="tier-grid mt-2 grid grid-cols-3 gap-2">
-            <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+            <div class="flex items-center justify-between rounded-lg px-3 py-2" style="background:rgba(168,162,255,0.06);border:1px solid rgba(168,162,255,0.15)">
               <div class="flex items-center gap-2">
-                <span class="inline-block w-3 h-3 rounded-full" style="background:#000000"></span>
-                <span class="text-xs text-gray-700">Low</span>
+                <span class="inline-block w-3 h-3 rounded-full" style="background:#a8a2ff;box-shadow:0 0 6px rgba(168,162,255,0.5)"></span>
+                <span class="text-xs" style="color:rgba(200,205,240,0.8)">Low</span>
               </div>
-              <span class="text-xs font-semibold text-gray-900" id="count-low">--</span>
+              <span class="text-xs font-semibold" style="color:#e0e4ff" id="count-low">--</span>
             </div>
-            <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+            <div class="flex items-center justify-between rounded-lg px-3 py-2" style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15)">
               <div class="flex items-center gap-2">
-                <span class="inline-block w-3 h-3 rounded-full" style="background:#2563eb"></span>
-                <span class="text-xs text-gray-700">Mid</span>
+                <span class="inline-block w-3 h-3 rounded-full" style="background:#60a5fa;box-shadow:0 0 6px rgba(96,165,250,0.5)"></span>
+                <span class="text-xs" style="color:rgba(200,205,240,0.8)">Mid</span>
               </div>
-              <span class="text-xs font-semibold text-gray-900" id="count-mid">--</span>
+              <span class="text-xs font-semibold" style="color:#e0e4ff" id="count-mid">--</span>
             </div>
-            <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+            <div class="flex items-center justify-between rounded-lg px-3 py-2" style="background:rgba(250,204,21,0.06);border:1px solid rgba(250,204,21,0.15)">
               <div class="flex items-center gap-2">
-                <span class="inline-block w-3 h-3 rounded-full" style="background:#D4AF37"></span>
-                <span class="text-xs text-gray-700">Luxury</span>
+                <span class="inline-block w-3 h-3 rounded-full" style="background:#fbbf24;box-shadow:0 0 6px rgba(251,191,36,0.5)"></span>
+                <span class="text-xs" style="color:rgba(200,205,240,0.8)">Luxury</span>
               </div>
-              <span class="text-xs font-semibold text-gray-900" id="count-lux">--</span>
+              <span class="text-xs font-semibold" style="color:#e0e4ff" id="count-lux">--</span>
             </div>
           </div>
-          <div class="mt-2 text-[11px] text-gray-500">
+          <div class="mt-2 text-[11px]" style="color:rgba(165,170,210,0.5)">
             Thresholds: Low &lt; <span class="font-semibold" id="th-low">35</span> • Mid <span class="font-semibold" id="th-mid">35–55</span> • Luxury &gt; <span class="font-semibold" id="th-lux">55</span> (OMR ADR)
           </div>
         </div>
@@ -198,14 +241,14 @@
         <div class="grid grid-cols-1 gap-3">
           <div class="filter-grid grid grid-cols-2 gap-3">
             <div>
-              <label class="text-xs text-gray-600 mb-1 block">Neighborhood (City)</label>
-              <select id="neighborhood-filter" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+              <label class="text-xs mb-1 block" style="color:rgba(165,170,210,0.6)">Neighborhood (City)</label>
+              <select id="neighborhood-filter" class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#e0e4ff;focus-ring-color:rgba(99,102,241,0.4)">
                 <option value="all">All</option>
               </select>
             </div>
             <div>
-              <label class="text-xs text-gray-600 mb-1 block">Listing Type</label>
-              <select id="type-filter" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+              <label class="text-xs mb-1 block" style="color:rgba(165,170,210,0.6)">Listing Type</label>
+              <select id="type-filter" class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#e0e4ff">
                 <option value="all">All</option>
               </select>
             </div>
@@ -213,8 +256,8 @@
 
           <div class="filter-grid grid grid-cols-2 gap-3">
             <div>
-              <label class="text-xs text-gray-600 mb-1 block">Pricing tier</label>
-              <select id="tier-filter" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+              <label class="text-xs mb-1 block" style="color:rgba(165,170,210,0.6)">Pricing tier</label>
+              <select id="tier-filter" class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#e0e4ff">
                 <option value="all">All tiers</option>
                 <option value="low">Low</option>
                 <option value="mid">Mid</option>
@@ -222,8 +265,8 @@
               </select>
             </div>
             <div>
-              <label class="text-xs text-gray-600 mb-1 block">View</label>
-              <select id="view-filter" class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+              <label class="text-xs mb-1 block" style="color:rgba(165,170,210,0.6)">View</label>
+              <select id="view-filter" class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#e0e4ff">
                 <option value="all">All listings</option>
                 <option value="top20">Top 20% by revenue</option>
               </select>
@@ -231,7 +274,7 @@
           </div>
         </div>
 
-        <div class="text-[11px] text-gray-500">
+        <div class=”text-[11px]” style=”color:rgba(165,170,210,0.4)”>
           Tip: On mobile, tap “Minimize” to view the map. Click any point for Airbnb + Google Maps links.
         </div>
       </div>
@@ -241,10 +284,10 @@
     <div id="map" class="h-full w-full"></div>
 
     <!-- Property panel -->
-    <div id="property-panel" class="control-panel absolute bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white/92 backdrop-blur-md rounded-2xl p-5 border border-gray-200 shadow-xl hidden">
+    <div id="property-panel" class="control-panel absolute bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 rounded-2xl p-5 hidden" style="background:rgba(10,14,26,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(99,102,241,0.25);box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 30px rgba(99,102,241,0.1);animation:fadeSlideUp 0.3s ease-out">
       <div class="flex justify-between items-start mb-3">
-        <h3 id="p-name" class="text-lg font-semibold text-gray-900 pr-2">Property</h3>
-        <button id="p-close" class="text-gray-500 hover:text-gray-900 transition-colors" aria-label="Close">
+        <h3 id="p-name" class="text-lg font-semibold pr-2" style="color:#e0e4ff">Property</h3>
+        <button id="p-close" class="transition-colors" style="color:rgba(165,170,210,0.5)" onmouseover="this.style.color='#e0e4ff'" onmouseout="this.style.color='rgba(165,170,210,0.5)'" aria-label="Close">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -252,20 +295,20 @@
       </div>
 
       <div class="space-y-2 text-sm">
-        <div class="flex justify-between"><span class="text-gray-500">City</span><span id="p-city" class="text-gray-900 font-medium">--</span></div>
-        <div class="flex justify-between"><span class="text-gray-500">Listing Type</span><span id="p-type" class="text-gray-900 font-medium">--</span></div>
-        <div class="flex justify-between"><span class="text-gray-500">Pricing tier</span><span id="p-tier" class="text-gray-900 font-medium">--</span></div>
-        <div class="flex justify-between"><span class="text-gray-500">Monthly revenue</span><span id="p-rev" class="text-emerald-700 font-semibold">--</span></div>
-        <div class="flex justify-between"><span class="text-gray-500">ADR</span><span id="p-adr" class="text-gray-900 font-medium">--</span></div>
-        <div class="flex justify-between"><span class="text-gray-500">Occupancy</span><span id="p-occ" class="text-gray-900 font-medium">--</span></div>
+        <div class="flex justify-between"><span style="color:rgba(165,170,210,0.6)">City</span><span id="p-city" class="font-medium" style="color:#e0e4ff">--</span></div>
+        <div class="flex justify-between"><span style="color:rgba(165,170,210,0.6)">Listing Type</span><span id="p-type" class="font-medium" style="color:#e0e4ff">--</span></div>
+        <div class="flex justify-between"><span style="color:rgba(165,170,210,0.6)">Pricing tier</span><span id="p-tier" class="font-medium" style="color:#e0e4ff">--</span></div>
+        <div class="flex justify-between"><span style="color:rgba(165,170,210,0.6)">Monthly revenue</span><span id="p-rev" class="font-semibold" style="color:#34d399">--</span></div>
+        <div class="flex justify-between"><span style="color:rgba(165,170,210,0.6)">ADR</span><span id="p-adr" class="font-medium" style="color:#e0e4ff">--</span></div>
+        <div class="flex justify-between"><span style="color:rgba(165,170,210,0.6)">Occupancy</span><span id="p-occ" class="font-medium" style="color:#e0e4ff">--</span></div>
 
         <div class="pt-3 flex gap-2">
           <a id="p-airbnb" target="_blank" rel="noopener noreferrer"
-             class="flex-1 text-center text-sm px-3 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800">
+             class="flex-1 text-center text-sm px-3 py-2 rounded-lg font-semibold transition-all" style="background:rgba(99,102,241,0.8);color:#fff;border:1px solid rgba(99,102,241,0.5)" onmouseover="this.style.background='rgba(99,102,241,1)';this.style.boxShadow='0 0 15px rgba(99,102,241,0.4)'" onmouseout="this.style.background='rgba(99,102,241,0.8)';this.style.boxShadow='none'">
             Open Airbnb
           </a>
           <a id="p-maps" target="_blank" rel="noopener noreferrer"
-             class="flex-1 text-center text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 hover:bg-gray-50">
+             class="flex-1 text-center text-sm px-3 py-2 rounded-lg font-semibold transition-all" style="background:rgba(255,255,255,0.06);color:#e0e4ff;border:1px solid rgba(255,255,255,0.15)" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(99,102,241,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.15)'">
             Open Maps
           </a>
         </div>
@@ -315,9 +358,14 @@
       return "Low";
     }
     function tierColor(t){
-      if (t === "luxury") return "#D4AF37";
-      if (t === "mid") return "#2563eb";
-      return "#000000";
+      if (t === "luxury") return "#fbbf24";
+      if (t === "mid") return "#60a5fa";
+      return "#a8a2ff";
+    }
+    function tierGlow(t){
+      if (t === "luxury") return "rgba(251,191,36,0.6)";
+      if (t === "mid") return "rgba(96,165,250,0.6)";
+      return "rgba(168,162,255,0.6)";
     }
     function markerSizeFromRevenue(rev){
       const r = Math.sqrt(Math.max(0, Number(rev || 0))) * 0.35;
@@ -483,44 +531,61 @@
     // =========================
     function createMarker(item) {
       const color = tierColor(item.tier);
+      const glow = tierGlow(item.tier);
       const size = markerSizeFromRevenue(item.revenue);
+      const outerSize = size + 10;
 
       const markerHtml = `
-        <div style="
-          width:${size}px;height:${size}px;
-          background:${color};
-          border:2px solid rgba(255,255,255,0.9);
-          border-radius:9999px;
-          box-shadow:0 10px 22px rgba(0,0,0,0.22);
-          cursor:pointer;
-          transition: transform 0.15s ease;
-        "></div>
+        <div class="marker-outer" style="
+          position:relative;
+          width:${outerSize}px;height:${outerSize}px;
+          display:flex;align-items:center;justify-content:center;
+        ">
+          <div class="marker-ring" style="
+            position:absolute;inset:0;
+            border-radius:9999px;
+            background:${color};
+            opacity:0.15;
+            animation:pulseGlow 3s ease-in-out infinite;
+            --glow-color:${glow};
+          "></div>
+          <div class="marker-dot" style="
+            width:${size}px;height:${size}px;
+            background:radial-gradient(circle at 35% 35%, ${color}, ${color}dd);
+            border:2px solid rgba(255,255,255,0.7);
+            border-radius:9999px;
+            box-shadow:0 0 12px ${glow}, 0 4px 16px rgba(0,0,0,0.4);
+            cursor:pointer;
+            transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease;
+            position:relative;z-index:2;
+          "></div>
+        </div>
       `;
 
       const icon = L.divIcon({
         html: markerHtml,
         className: 'custom-marker',
-        iconSize: [size, size],
-        iconAnchor: [size/2, size/2]
+        iconSize: [outerSize, outerSize],
+        iconAnchor: [outerSize/2, outerSize/2]
       });
 
       const marker = L.marker([item.lat, item.lng], { icon })
         .bindPopup(`
           <div class="p-2">
-            <div class="font-semibold text-base mb-2">${item.name}</div>
-            <div class="text-gray-300 text-xs space-y-1">
+            <div class="font-semibold text-base mb-2" style="color:#e0e4ff">${item.name}</div>
+            <div class="text-xs space-y-1" style="color:rgba(200,205,240,0.7)">
               <div>📍 ${item.city}</div>
               <div>🏠 ${item.type}</div>
-              <div>🏷 Tier: <span style="color:${color};font-weight:700">${tierLabel(item.tier)}</span></div>
-              <div>💰 Monthly: <span style="color:#10b981">${fmtOMR(item.revenue)} OMR</span></div>
+              <div>🏷 Tier: <span style="color:${color};font-weight:700;text-shadow:0 0 8px ${glow}">${tierLabel(item.tier)}</span></div>
+              <div>💰 Monthly: <span style="color:#34d399;text-shadow:0 0 8px rgba(52,211,153,0.4)">${fmtOMR(item.revenue)} OMR</span></div>
               <div>📈 ADR: ${Math.round(item.adr)} OMR | Occ: ${Math.round(item.occupancy)}%</div>
               <div class="pt-2 flex gap-2">
                 <a href="${item.airbnbUrl}" target="_blank" rel="noopener noreferrer"
-                   style="display:inline-block;padding:6px 10px;border-radius:10px;background:#111827;color:#fff;font-weight:600;text-decoration:none;">
+                   style="display:inline-block;padding:6px 10px;border-radius:10px;background:rgba(99,102,241,0.8);color:#fff;font-weight:600;text-decoration:none;transition:all 0.2s">
                   Airbnb
                 </a>
                 <a href="${item.mapsUrl}" target="_blank" rel="noopener noreferrer"
-                   style="display:inline-block;padding:6px 10px;border-radius:10px;background:#fff;color:#111827;font-weight:600;text-decoration:none;border:1px solid rgba(255,255,255,0.18);">
+                   style="display:inline-block;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,0.08);color:#e0e4ff;font-weight:600;text-decoration:none;border:1px solid rgba(255,255,255,0.15);transition:all 0.2s">
                   Maps
                 </a>
               </div>
@@ -528,14 +593,28 @@
           </div>
         `, { className: 'custom-popup' });
 
-      // hover effect
+      // hover effect with glow burst
       marker.on('mouseover', function(){
         const el = this.getElement();
-        if (el) el.firstChild && (el.firstChild.style.transform = "scale(1.12)");
+        if (!el) return;
+        const dot = el.querySelector('.marker-dot');
+        const ring = el.querySelector('.marker-ring');
+        if (dot) {
+          dot.style.transform = "scale(1.2)";
+          dot.style.boxShadow = `0 0 20px ${glow}, 0 0 40px ${glow}, 0 4px 16px rgba(0,0,0,0.4)`;
+        }
+        if (ring) { ring.style.opacity = "0.35"; ring.style.transform = "scale(1.3)"; }
       });
       marker.on('mouseout', function(){
         const el = this.getElement();
-        if (el) el.firstChild && (el.firstChild.style.transform = "scale(1)");
+        if (!el) return;
+        const dot = el.querySelector('.marker-dot');
+        const ring = el.querySelector('.marker-ring');
+        if (dot) {
+          dot.style.transform = "scale(1)";
+          dot.style.boxShadow = `0 0 12px ${glow}, 0 4px 16px rgba(0,0,0,0.4)`;
+        }
+        if (ring) { ring.style.opacity = "0.15"; ring.style.transform = "scale(1)"; }
       });
 
       return marker;
@@ -681,7 +760,7 @@
 
       map = L.map('map', { center: [23.5950, 58.4500], zoom: 12, zoomControl: true });
 
-      L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=ea1b3b5b-d0c0-4cb9-83d2-b68d9cd5a1ff', {
+      L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=ea1b3b5b-d0c0-4cb9-83d2-b68d9cd5a1ff', {
         attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
         maxZoom: 20
       }).addTo(map);

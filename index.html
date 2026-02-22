@@ -681,9 +681,9 @@
 
       map = L.map('map', { center: [23.5950, 58.4500], zoom: 12, zoomControl: true });
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-        maxZoom: 19
+      L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=ea1b3b5b-d0c0-4cb9-83d2-b68d9cd5a1ff', {
+        attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+        maxZoom: 20
       }).addTo(map);
 
       document.getElementById('p-close').addEventListener('click', closePropertyPanel);
